@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Letter</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            margin: 40px;
+        }
+        .letterhead, .date, .recipient, .subject, .content, .signature {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 2px;
+            margin-left: 5px;
+            margin-right: 5px;
+            border: none;
+            border-bottom: 1px solid #000;
+            font-family: inherit;
+            font-size: inherit;
+            width: auto;
+            box-sizing: content-box;
+        }
+        .letterhead, .subject {
+            font-weight: bold;
+        }
+        button {
+            background-color: #2c3e50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        button:hover {
+            background-color: #34495e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="letterhead">
+        <input type="text" id="companyLetterhead" placeholder="[Your Company’s Letterhead]" required>
+    </div>
+
+    <div class="date">
+        Date: <input type="text" id="date" placeholder="[Insert Date]" required>
+    </div>
+
+    <div class="recipient">
+        To: <br>
+        <input type="text" id="employeeName" placeholder="[Employee's Name]" required><br>
+        <input type="text" id="employeePosition" placeholder="[Employee's Position]" required><br>
+        <input type="text" id="department" placeholder="[Department]" required><br>
+        <input type="text" id="companyName" placeholder="[Company Name]" required><br>
+        <input type="text" id="companyAddress" placeholder="[Company Address]" required>
+    </div>
+
+    <div class="subject">
+        Subject: Query Letter for Unprofessional Conduct – Lateness/Absence from Meetings
+    </div>
+
+    <div class="content">
+        Dear <span id="empNameSpan">[Employee's Name]</span>, <br><br>
+
+        It has come to our attention that on 
+        <input type="text" id="incidentDate" placeholder="[Insert Date(s)]" required>
+        you were 
+        <input type="text" id="incidentType" placeholder="[late for/absent from]" required>
+        the scheduled team meeting without prior communication or valid reason. This behaviour is contrary to the company's expectations regarding professional conduct, particularly in matters of punctuality and active participation in meetings. <br><br>
+
+        As you are aware, attendance at meetings is crucial for the smooth operation of our team and the achievement of our collective goals. Your 
+        <input type="text" id="incidentDescription" placeholder="[lateness/absence]" required>
+        has disrupted the flow of the meeting and the productivity of your colleagues. <br><br>
+
+        This letter serves as a formal warning. You are hereby advised to take immediate corrective actions to ensure that such incidents do not reoccur. Please be reminded that continued failure to meet these expectations may result in further disciplinary action, including but not limited to a second query letter which may lead to probation or a strong warning. <br><br>
+
+        We expect your full compliance with company policies moving forward. <br><br>
+
+        Please provide a written explanation for your 
+        <input type="text" id="incidentExplanation" placeholder="[lateness/absence]" required>
+        within the next 24 hours.
+    </div>
+
+    <div class="signature">
+        Yours sincerely, <br><br>
+        <input type="text" id="hrName" placeholder="[Your Name]" required><br>
+        HR Manager <br>
+        <input type="text" id="hrCompanyName" placeholder="[Company Name]" required>
+    </div>
+
+    <button type="button" onclick="saveProgress()">Save Progress</button>
+    <button type="button" onclick="generatePDF()">Save as PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        // Save progress to localStorage
+        function saveProgress() {
+            const data = {
+                companyLetterhead: document.getElementById('companyLetterhead').value,
+                date: document.getElementById('date').value,
+                employeeName: document.getElementById('employeeName').value,
+                employeePosition: document.getElementById('employeePosition').value,
+                department: document.getElementById('department').value,
+                companyName: document.getElementById('companyName').value,
+                companyAddress: document.getElementById('companyAddress').value,
+                incidentDate: document.getElementById('incidentDate').value,
+                incidentType: document.getElementById('incidentType').value,
+                incidentDescription: document.getElementById('incidentDescription').value,
+                incidentExplanation: document.getElementById('incidentExplanation').value,
+                hrName: document.getElementById('hrName').value,
+                hrCompanyName: document.getElementById('hrCompanyName').value
+            };
+            localStorage.setItem('queryLetterData', JSON.stringify(data));
+            alert('Progress saved successfully!');
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const data = JSON.parse(localStorage.getItem('queryLetterData'));
+            if (data) {
+                document.getElementById('companyLetterhead').value = data.companyLetterhead;
+                document.getElementById('date').value = data.date;
+                document.getElementById('employeeName').value = data.employeeName;
+                document.getElementById('employeePosition').value = data.employeePosition;
+                document.getElementById('department').value = data.department;
+                document.getElementById('companyName').value = data.companyName;
+                document.getElementById('companyAddress').value = data.companyAddress;
+                document.getElementById('incidentDate').value = data.incidentDate;
+                document.getElementById('incidentType').value = data.incidentType;
+                document.getElementById('incidentDescription').value = data.incidentDescription;
+                document.getElementById('incidentExplanation').value = data.incidentExplanation;
+                document.getElementById('hrName').value = data.hrName;
+                document.getElementById('hrCompanyName').value = data.hrCompanyName;
+
+                document.getElementById('empNameSpan').innerText = data.employeeName;
+            }
+        }
+
+        // Generate PDF
+        function generatePDF() {
+    const doc = new jsPDF();
+    
+    doc.setFont("Times", "Normal");
+    doc.setFontSize(12);
+
+    const lineHeight = 0.6; // Reduced line height
+    const marginTop = 7;
+    const pageHeight = doc.internal.pageSize.height;
+
+    let startY = 10;
+
+    doc.text(document.getElementById('companyLetterhead').value, 20, startY);
+    startY += 10;
+    doc.text(`Date: ${document.getElementById('date').value}`, 20, startY);
+    
+    startY += 10;
+    doc.text(`To:`, 20, startY);
+    startY += 7;
+    doc.text(document.getElementById('employeeName').value, 20, startY);
+    startY += 7;
+    doc.text(document.getElementById('employeePosition').value, 20, startY);
+    startY += 7;
+    doc.text(document.getElementById('department').value, 20, startY);
+    startY += 7;
+    doc.text(document.getElementById('companyName').value, 20, startY);
+    startY += 7;
+    doc.text(document.getElementById('companyAddress').value, 20, startY);
+
+    startY += 10;
+    doc.text(`Subject: Query Letter for Unprofessional Conduct – Lateness/Absence from Meetings`, 20, startY);
+
+    startY += 10;
+    const contentText = `
+Dear ${document.getElementById('employeeName').value},
+
+It has come to our attention that on ${document.getElementById('incidentDate').value} you were ${document.getElementById('incidentType').value} the scheduled team meeting without prior communication or valid reason. This behaviour is contrary to the company's expectations regarding professional conduct, particularly in matters of punctuality and active participation in meetings.
+
+As you are aware, attendance at meetings is crucial for the smooth operation of our team and the achievement of our collective goals. Your ${document.getElementById('incidentDescription').value} has disrupted the flow of the meeting and the productivity of your colleagues.
+
+This letter serves as a formal warning. You are hereby advised to take immediate corrective actions to ensure that such incidents do not reoccur. Please be reminded that continued failure to meet these expectations may result in further disciplinary action, including but not limited to a second query letter which may lead to probation or a strong warning.
+
+We expect your full compliance with company policies moving forward.
+
+Please provide a written explanation for your ${document.getElementById('incidentExplanation').value} within the next 24 hours.
+    `;
+
+    const contentLines = doc.splitTextToSize(contentText, 170);
+    
+    contentLines.forEach(line => {
+        if (startY + 10 > pageHeight) {
+            doc.addPage();
+            startY = marginTop;
+        }
+        doc.text(line, 20, startY);
+        startY += 10 * lineHeight;
+    });
+
+    startY += 10;
+    if (startY + 30 > pageHeight) {
+        doc.addPage();
+        startY = marginTop;
+    }
+    doc.text(`Yours sincerely,`, 20, startY);
+    startY += 20;
+    doc.text(document.getElementById('hrName').value, 20, startY);
+    startY += 10;
+    doc.text(`HR Manager`, 20, startY);
+    startY += 10;
+    doc.text(document.getElementById('hrCompanyName').value, 20, startY);
+
+    doc.save('Query_Letter.pdf');
+}
+
+
+        // Load progress on page load
+        window.onload = loadProgress;
+    </script>
+</body>
+</html>
